@@ -8,7 +8,7 @@ class CourseViewSet(viewsets.ModelViewSet):
     """
     CRUD для курса: полный доступ через ViewSet
     """
-    queryset = Course.objects.all()
+    queryset = Course.objects.prefetch_related('lessons').all()
     serializer_class = CourseSerializer
 
 
