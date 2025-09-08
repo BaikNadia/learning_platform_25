@@ -1,0 +1,33 @@
+[
+  {
+    "model": "materials.course",
+    "pk": 1,
+    "fields": {
+      "title": "Python для начинающих",
+      "description": "Курс по основам",
+      "preview": null
+    }
+  },
+  {
+    "model": "materials.lesson",
+    "pk": 1,
+    "fields": {
+      "title": "Установка Python",
+      "description": "Как установить",
+      "video_url": "https://youtube.com/...",
+      "preview": null,
+      "course": 1
+    }
+  },
+  {
+    "model": "materials.lesson",
+    "pk": 2,
+    "fields": {
+      "title": "Первые шаги",
+      "description": "Hello World",
+      "video_url": "https://youtube.com/...",
+      "preview": null,
+      "course": 1
+    }
+  }
+]

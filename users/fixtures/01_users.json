@@ -1,0 +1,31 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$...",
+      "email": "baikowa.nadia@gmail.com",
+      "first_name": "Надежда",
+      "last_name": "Байк",
+      "phone": "+79991234567",
+      "city": "Москва",
+      "avatar": null,
+      "is_staff": true,
+      "is_active": true
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$260000$...",
+      "email": "user2@example.com",
+      "first_name": "Иван",
+      "last_name": "Петров",
+      "phone": "+79991234568",
+      "city": "СПб",
+      "avatar": null,
+      "is_active": true
+    }
+  }
+]
