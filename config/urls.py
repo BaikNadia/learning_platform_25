@@ -8,6 +8,7 @@ router.register(r'courses', CourseViewSet)
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls)),                    # /api/courses/
-    path('api/lessons/', include('materials.urls')),       # /api/lessons/ → + материалы.urls
+    path('api/', include(router.urls)),
+    path('api/lessons/', include('materials.urls')),
+    path('api/users/', include('users.urls')),
 ]
