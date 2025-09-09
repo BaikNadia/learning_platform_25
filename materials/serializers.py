@@ -8,16 +8,18 @@ class LessonSerializer(serializers.ModelSerializer):
     Используется как вложенный в CourseSerializer.
     """
 
+
     class Meta:
         model = Lesson
-        fields = [
-            'id',
-            'title',
-            'description',
-            'preview',
-            'video_url',
-        ]
-        # Поле 'course' исключено, чтобы не дублировать информацию вложенностью
+        fields = '__all__'
+        # fields = [
+        #     'id',
+        #     'title',
+        #     'description',
+        #     'preview',
+        #     'video_url',
+        # ]
+        # # Поле 'course' исключено, чтобы не дублировать информацию вложенностью
 
 
 class CourseSerializer(serializers.ModelSerializer):
