@@ -34,3 +34,47 @@ learning_platform_25/
 ├── media/                # Загружаемые файлы 
 ├── manage.py
 └── requirements.txt      # зависимости
+
+## Создай и активируй виртуальное окружение
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# Linux/Mac:
+source .venv/bin/activate
+
+## Установи зависимости
+pip install django djangorestframework django-filter
+
+## Выполни миграции
+python manage.py makemigrations
+python manage.py migrate
+
+## Создай суперпользователя
+python manage.py createsuperuser
+
+## Загрузи тестовые данные (фикстуры)
+python manage.py loaddata payment_data.json
+
+## Запусти сервер
+python manage.py runserver
+
+# API Эндпоинты
+## Курсы: /api/courses/
+GET — список курсов (с количеством и списком уроков)
+POST — создать курс
+## Уроки: /api/lessons/
+GET — список уроков
+POST — создать урок (обязательно: course)
+GET /api/lessons/1/ — получить урок
+PUT/PATCH — обновить
+DELETE — удалить
+## Платежи: /api/users/payments/
+GET — список платежей
+## Фильтры:
+?paid_course=1 — по курсу
+?paid_lesson=1 — по уроку
+?payment_method=TRANSFER — по способу (CASH, TRANSFER)
+?ordering=payment_date — сортировка по дате (по убыванию: -payment_date)
+## Профиль: /api/users/me/
+GET — получить профиль
+PATCH — обновить (имя, телефон, город, аватар)
