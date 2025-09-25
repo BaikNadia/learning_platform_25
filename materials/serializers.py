@@ -20,6 +20,7 @@ class LessonSerializer(serializers.ModelSerializer):
         #     'video_url',
         # ]
         # # Поле 'course' исключено, чтобы не дублировать информацию вложенностью
+        read_only_fields = ('owner',)
 
 
 class CourseSerializer(serializers.ModelSerializer):
@@ -42,6 +43,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'lesson_count',
             'lessons',
         ]
+        read_only_fields = ('owner',)
 
     def get_lesson_count(self, obj):
         """
