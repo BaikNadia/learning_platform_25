@@ -18,7 +18,13 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ('id', 'email', 'first_name', 'last_name', 'phone', 'city', 'avatar', 'password')
-        read_only_fields = ('id', 'email')
+        read_only_fields = ('id',)
+
+
+    def validate_email(self, value):
+        if User.objects.filter(email=value).exists():
+            raise serializers.ValidationError("Пользователь с таким email уже существует.")
+        return value
 
     def create(self, validated_data):
         password = validated_data.pop('password')
