@@ -61,6 +61,7 @@ class CourseSerializer(serializers.ModelSerializer):
             'lesson_count',
             'lessons',
             'is_subscribed',
+            'price',
         ]
         read_only_fields = ('owner',)
 
@@ -72,3 +73,7 @@ class CourseSerializer(serializers.ModelSerializer):
         if not request or not request.user.is_authenticated:
             return False
         return Subscription.objects.filter(user=request.user, course=obj).exists()
+
+
+class CoursePurchaseSerializer(serializers.Serializer):
+    course_id = serializers.IntegerField()
