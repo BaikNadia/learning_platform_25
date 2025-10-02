@@ -5,4 +5,5 @@ urlpatterns = [
     path('', views.LessonListCreateAPIView.as_view(), name='lesson-list-create'),
     path('<int:pk>/', views.LessonRetrieveUpdateDestroyAPIView.as_view(), name='lesson-retrieve-update-destroy'),
     path('toggle-subscribe/', views.SubscriptionToggleAPIView.as_view(), name='toggle-subscribe'),
+    path('create-checkout-session/', views.create_checkout_session, name='create-checkout-session'),
 ]
