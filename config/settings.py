@@ -36,6 +36,9 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework_simplejwt',
     'django_extensions',
+    'drf_yasg',
+    'corsheaders',
+
     'users',
     'materials',
 ]
@@ -43,6 +46,7 @@ INSTALLED_APPS = [
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -146,3 +150,17 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 10,
 }
+
+CORS_ALLOWED_ORIGINS = [
+    "https://read-only.example.com",  # Замените на адрес вашего фронтенд-сервера
+    "https://read-and-write.example.com",
+]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://read-and-write.example.com", #  Замените на адрес вашего фронтенд-сервера
+    # и добавьте адрес бэкенд-сервера
+]
+
+SITE_URL = 'http://127.0.0.1:8000'
+
+STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')

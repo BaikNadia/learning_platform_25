@@ -1,12 +1,16 @@
+import stripe
 from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
+from rest_framework.decorators import permission_classes, api_view
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from config import settings
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
 from users.permissions import IsModeratorOrReadOnly
+
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -133,3 +137,68 @@ class SubscriptionToggleAPIView(APIView):
             "message": message,
             "is_subscribed": is_subscribed
         }, status=status.HTTP_200_OK)
+
+
+stripe.api_key = settings.STRIPE_API_KEY
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def create_checkout_session(request):
+    """
+    Эндпоинт: создаёт Product, Price и Checkout Session в Stripe
+    """
+    course_id = request.data.get('course_id')
+    if not course_id:
+        return Response(
+            {"error": "Необходимо указать course_id"},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        course = Course.objects.get(id=course_id)
+    except Course.DoesNotExist:
+        return Response(
+            {"error": "Курс не найден"},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    try:
+        # 1. Создаём Product
+        product = stripe.Product.create(
+            name=course.title,
+            description=course.description or "Курс на платформе",
+            metadata={"course_id": course.id}
+        )
+
+        # 2. Создаём Price (цена в копейках)
+        price = stripe.Price.create(
+            product=product.id,
+            unit_amount=int(course.price * 100),  # 10.99 → 1099 центов
+            currency='rub',  # можно поменять на 'usd'
+            metadata={"course_id": course.id}
+        )
+
+        # 3. Создаём Checkout Session
+        session = stripe.checkout.Session.create(
+            payment_method_types=['card'],
+            line_items=[{
+                'price': price.id,
+                'quantity': 1,
+            }],
+            mode='payment',
+            success_url=settings.SITE_URL + '/success/',
+            cancel_url=settings.SITE_URL + '/cancel/',
+            client_reference_id=str(course.id),
+            customer_email=request.user.email,
+        )
+
+        return Response({
+            "checkout_url": session.url
+        }, status=status.HTTP_200_OK)
+
+    except Exception as e:
+        return Response(
+            {"error": f"Ошибка при создании сессии: {str(e)}"},
+            status=status.HTTP_400_BAD_REQUEST
+        )

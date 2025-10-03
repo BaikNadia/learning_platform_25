@@ -12,6 +12,13 @@ class Course(models.Model):
         verbose_name="Владелец",
         related_name="owned_courses"
     )
+    price = models.DecimalField(
+        max_digits=10,
+        decimal_places=2,
+        default=0.00,
+        verbose_name="Цена"
+    )
+
 
     def __str__(self):
         return self.title
@@ -19,6 +26,7 @@ class Course(models.Model):
     class Meta:
         verbose_name = "Курс"
         verbose_name_plural = "Курсы"
+
 
 
 class Subscription(models.Model):
