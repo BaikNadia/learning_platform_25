@@ -1,16 +1,15 @@
-import stripe
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, generics, status
-from rest_framework.decorators import permission_classes, api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from django.shortcuts import get_object_or_404
 
-from config import settings
 from .models import Course, Lesson, Subscription
 from .serializers import CourseSerializer, LessonSerializer
 from users.permissions import IsModeratorOrReadOnly
-
+from .services import create_checkout_session as create_stripe_session
+from .tasks import send_course_update_notification
 
 
 class CourseViewSet(viewsets.ModelViewSet):
@@ -45,13 +44,33 @@ class CourseViewSet(viewsets.ModelViewSet):
 
     def destroy(self, request, *args, **kwargs):
         """Запрещаем модераторам удалять курсы"""
-        instance = self.get_object()
+
         if request.user.groups.filter(name='moderators').exists():
             return Response(
                 {"detail": "Модераторы не могут удалять курсы."},
                 status=status.HTTP_403_FORBIDDEN
             )
         return super().destroy(request, *args, **kwargs)
+
+    def update(self, request, *args, **kwargs):
+        """При полном обновлении — отправляем уведомление подписчикам"""
+        response = super().update(request, *args, **kwargs)
+
+        # Только если обновление прошло успешно (200 OK)
+        if response.status_code == 200:
+            course_id = kwargs['pk']
+            # Отправляем задачу в Celery
+            send_course_update_notification.delay(course_id)
+        return response
+
+    def partial_update(self, request, *args, **kwargs):
+        """При частичном обновлении — тоже отправляем уведомление"""
+        response = super().partial_update(request, *args, **kwargs)
+
+        if response.status_code == 200:
+            course_id = kwargs['pk']
+            send_course_update_notification.delay(course_id)
+        return response
 
 
 class LessonListCreateAPIView(generics.ListCreateAPIView):
@@ -139,14 +158,12 @@ class SubscriptionToggleAPIView(APIView):
         }, status=status.HTTP_200_OK)
 
 
-stripe.api_key = settings.STRIPE_API_KEY
-
-
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def create_checkout_session(request):
     """
-    Эндпоинт: создаёт Product, Price и Checkout Session в Stripe
+    Эндпоинт: создаёт сессию оплаты через Stripe.
+    Вызывает сервисный слой.
     """
     course_id = request.data.get('course_id')
     if not course_id:
@@ -164,41 +181,10 @@ def create_checkout_session(request):
         )
 
     try:
-        # 1. Создаём Product
-        product = stripe.Product.create(
-            name=course.title,
-            description=course.description or "Курс на платформе",
-            metadata={"course_id": course.id}
-        )
-
-        # 2. Создаём Price (цена в копейках)
-        price = stripe.Price.create(
-            product=product.id,
-            unit_amount=int(course.price * 100),  # 10.99 → 1099 центов
-            currency='rub',  # можно поменять на 'usd'
-            metadata={"course_id": course.id}
-        )
-
-        # 3. Создаём Checkout Session
-        session = stripe.checkout.Session.create(
-            payment_method_types=['card'],
-            line_items=[{
-                'price': price.id,
-                'quantity': 1,
-            }],
-            mode='payment',
-            success_url=settings.SITE_URL + '/success/',
-            cancel_url=settings.SITE_URL + '/cancel/',
-            client_reference_id=str(course.id),
-            customer_email=request.user.email,
-        )
-
-        return Response({
-            "checkout_url": session.url
-        }, status=status.HTTP_200_OK)
-
+        result = create_stripe_session(course, request.user.email)
+        return Response(result, status=status.HTTP_200_OK)
     except Exception as e:
         return Response(
-            {"error": f"Ошибка при создании сессии: {str(e)}"},
+            {"error": str(e)},
             status=status.HTTP_400_BAD_REQUEST
         )
