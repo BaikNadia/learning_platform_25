@@ -35,13 +35,13 @@ schema_view = get_schema_view(
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # API маршруты от роутера
-    path('api/', include(router.urls)),
-
     # API
     path('api/', include('materials.urls')),           # уроки
     path('api/courses/', include('materials.urls')),  # курсы + подписка
     path('api/users/', include('users.urls')),
+
+    # API маршруты от роутера
+    path('api/', include(router.urls)),
 
     # Уроки
     path('api/lessons/', include('materials.urls')),
