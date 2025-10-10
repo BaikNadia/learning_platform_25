@@ -1,5 +1,6 @@
 import os
 
+from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -38,6 +39,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'drf_yasg',
     'corsheaders',
+    'django_celery_beat',
 
     'users',
     'materials',
@@ -164,3 +166,38 @@ CSRF_TRUSTED_ORIGINS = [
 SITE_URL = 'http://127.0.0.1:8000'
 
 STRIPE_API_KEY = os.getenv('STRIPE_API_KEY')
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "client_class": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
+SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+SESSION_CACHE_ALIAS = 'default'
+
+# Настройки для Celery
+
+REDIS_HOST = os.getenv('REDIS_HOST', 'localhost')
+REDIS_PORT = os.getenv('REDIS_PORT', 6379)
+REDIS_DB = os.getenv('REDIS_DB', 0)
+
+CELERY_BROKER_URL = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+CELERY_RESULT_BACKEND = f'redis://{REDIS_HOST}:{REDIS_PORT}/{REDIS_DB}'
+
+# Поведение Celery
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'
+
+# Для celery-beat
+CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
+
+# Настройка email для разработки
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+DEFAULT_FROM_EMAIL = 'webmaster@localhost'
