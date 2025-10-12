@@ -1,6 +1,7 @@
 import os
 
-from django.conf.global_settings import DEFAULT_FROM_EMAIL
+from celery.schedules import crontab
+# from django.conf.global_settings import DEFAULT_FROM_EMAIL
 from dotenv import load_dotenv
 from pathlib import Path
 
@@ -194,6 +195,17 @@ CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = 'UTC'
+
+# Настройка периодических задач для Celery Beat
+CELERY_BEAT_SCHEDULE = {
+    'deactivate-inactive-users-daily': {
+        'task': 'users.tasks.deactivate_inactive_users',
+        'schedule': crontab(hour=2, minute=0),  # Каждый день в 02:00
+        # Альтернативно: каждые 5 минут (для тестирования)
+        # 'schedule': crontab(minute='*/5'),
+    },
+}
+
 
 # Для celery-beat
 CELERY_BEAT_SCHEDULER = 'django_celery_beat.schedulers:DatabaseScheduler'
