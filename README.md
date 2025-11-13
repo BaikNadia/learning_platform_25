@@ -43,6 +43,7 @@
 - Stripe API
 - Redis + Celery + Celery Beat
 - PostgreSQL
+- Docker + Docker Compose
 - Git + GitHub
 - Postman (рекомендуется для тестирования API)
 
@@ -92,6 +93,18 @@ celery -A config worker -l info -P solo
 
 ### Запусти Celery Beat:
 celery -A config beat -l info --scheduler django_celery_beat.schedulers:DatabaseScheduler
+
+## 🐳 Запуск через Docker:
+1. Убедись, что есть файлы:
+.env; docker-compose.yaml; Dockerfile; requirements.txt
+
+2. Собери и запусти:
+docker-compose up -d --build
+
+3. Выполни миграции и создай суперпользователя:
+docker-compose exec backend python manage.py migrate
+docker-compose exec backend python manage.py createsuperuser
+
 
 # API Эндпоинты
 ## Авторизация и пользователи
