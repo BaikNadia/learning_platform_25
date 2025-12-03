@@ -1,6 +1,21 @@
-# Learning Platform 25
+# 🚀 Learning Platform 25
 
-Учебная платформа для изучения программирования. Проект реализован на **Django** и **Django REST Framework (DRF)**. Поддерживает управление курсами, уроками и профилями пользователей через REST API.
+[![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/Django-4.2%2B-green?logo=django&logoColor=white)](https://www.djangoproject.com/)
+[![Django REST](https://img.shields.io/badge/Django%20REST%20Framework-3.14%2B-red?logo=django&logoColor=white)](https://www.django-rest-framework.org/)
+[![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15%2B-blue?logo=postgresql&logoColor=white)](https://www.postgresql.org/)
+[![Docker](https://img.shields.io/badge/Docker-24%2B-blue?logo=docker&logoColor=white)](https://www.docker.com/)
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC%20BY%204.0-lightgrey?logo=creativecommons&logoColor=white)](https://creativecommons.org/licenses/by/4.0/)
+[![GitHub Stars](https://img.shields.io/github/stars/BaikNadia/learning-platform-25?style=social)](https://github.com/BaikNadia/learning-platform-25)
+
+**Современная учебная платформа для изучения программирования**  
+Проект реализован на **Django** и **Django REST Framework (DRF)** с поддержкой управления курсами, уроками и профилями пользователей через REST API.
+
+---
+
+**👩‍💻 Автор:** [BaikNadia](https://github.com/BaikNadia)  
+**📦 Репозиторий:** [Learning Platform 25](https://github.com/BaikNadia/learning-platform-25)  
+**📜 Лицензия:** [Creative Commons Attribution 4.0 International](https://creativecommons.org/licenses/by/4.0/)
 
 ---
 
